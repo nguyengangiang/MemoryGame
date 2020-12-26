@@ -20,6 +20,7 @@ struct ContentView: View {
     }
     .padding()
     .foregroundColor(Color.orange)
+    .font(viewModel.numberOfPairsOfCards < 5 ? .largeTitle : .title)
     }
 }
 
@@ -30,12 +31,13 @@ struct CardView: View {
             if card.isFaceUp {
                 RoundedRectangle(cornerRadius: 10).stroke(lineWidth: 3)
                 RoundedRectangle(cornerRadius: 10).fill(Color.white)
-                Text(card.content).font(Font.largeTitle)
+                Text(card.content)
                 }
             else {
                 RoundedRectangle(cornerRadius: 10).fill()
             }
         }
+        .aspectRatio(CGSize(width: 2, height: 3), contentMode: .fit)
     }
 }
 
@@ -44,3 +46,4 @@ struct ContentView_Previews: PreviewProvider {
         ContentView(viewModel: EmojiMemoryGame())
     }
 }
+
