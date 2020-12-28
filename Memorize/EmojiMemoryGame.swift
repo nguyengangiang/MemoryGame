@@ -31,7 +31,4 @@ class EmojiMemoryGame: ObservableObject{
     var numberOfPairsOfCards: Int {
         model.cards.count
     }
-    
-    
-    
 }
