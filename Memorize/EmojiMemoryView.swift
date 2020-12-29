@@ -11,15 +11,19 @@ struct EmojiMemoryView: View {
     @ObservedObject var viewModel: EmojiMemoryGame
     
     var body: some View {
-        Button("New Game") {viewModel.newGame()}
-        Grid (items: viewModel.cards) { card in
-            CardView(card: card).onTapGesture {
-                viewModel.choose(card: card)
+        Group() {
+            Text(viewModel.themeName)
+            Text(String(viewModel.score))
+            Grid (items: viewModel.cards) { card in
+                CardView(card: card).onTapGesture {
+                    viewModel.choose(card: card)
+                }
+                .padding(5)
             }
-            .padding(5)
+            Button("New Game") {viewModel.newGame()}
         }
-    .padding()
-    .foregroundColor(Color.orange)
+        .padding()
+        .foregroundColor(viewModel.color)
     }
 }
 
