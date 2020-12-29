@@ -17,8 +17,12 @@ class EmojiMemoryGame: ObservableObject{
             emojis[index]
         })
     }
-    
+        
     //MARK: Intent(s)
+    func newGame() {
+        model = EmojiMemoryGame.createMemoryGame()
+    }
+    
     func choose(card: MemoryGame<String>.Card) {
         model.choose(card: card)
     }

@@ -11,6 +11,7 @@ struct EmojiMemoryView: View {
     @ObservedObject var viewModel: EmojiMemoryGame
     
     var body: some View {
+        Button("New Game") {viewModel.newGame()}
         Grid (items: viewModel.cards) { card in
             CardView(card: card).onTapGesture {
                 viewModel.choose(card: card)
