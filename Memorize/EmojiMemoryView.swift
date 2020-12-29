@@ -45,7 +45,6 @@ struct CardView: View {
             }
             .font(Font.system(size: fontSize(size: geometry.size)))
         }
-        .aspectRatio(CGSize(width: 2, height: 3), contentMode: .fit)
     }
     
     // MARKS: - Drawing constants
