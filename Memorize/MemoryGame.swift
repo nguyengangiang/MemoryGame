@@ -9,10 +9,10 @@ import Foundation
 import SwiftUI
 
 struct MemoryGame<CardContent> where CardContent: Equatable{
-    var cards: [Card]
-    var name: String
-    var color: Color
-    var score: Int
+    private(set) var cards: [Card]
+    private(set) var name: String
+    private(set) var color: Color
+    private(set) var score: Int
 
     var indexOfTheOneAndOnlyFaceUpCard: Int? {
         get {
