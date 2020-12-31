@@ -25,14 +25,13 @@ struct Cardify: AnimatableModifier {
     
     func body(content: Content) -> some View {
         ZStack {
-            if isFaceUp {
+            Group{
                 RoundedRectangle(cornerRadius: cornerRadius).stroke(lineWidth: lineWidth)
                 RoundedRectangle(cornerRadius: cornerRadius).fill(Color.white)
                 content
-            } else {
-                RoundedRectangle(cornerRadius: cornerRadius).fill()
+            }.opacity(isFaceUp ? 1 : 0)
+            RoundedRectangle(cornerRadius: cornerRadius).fill().opacity(isFaceUp ? 0 : 1)
             }
-        }
         .rotation3DEffect(Angle.degrees(rotation), axis: (0, 1, 0))
     }
     private let cornerRadius: CGFloat = 10
