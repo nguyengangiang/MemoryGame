@@ -15,8 +15,7 @@ struct EmojiMemoryView: View {
             Text(viewModel.themeName)
             Text(String(viewModel.score))
             Grid (items: viewModel.cards) { card in
-                CardView(card: card).onTapGesture {
-                    viewModel.choose(card: card)
+                CardView(card: card).onTapGesture { withAnimation(.linear(duration: 0.5)) {viewModel.choose(card: card)}
                 }
                 .padding(5)
             }
@@ -42,6 +41,7 @@ struct CardView: View {
                     }
                 .font(Font.system(size: fontSize(size: geometry.size)))
                 .cardify(isFaceUp: card.isFaceUp)
+                .transition(AnyTransition.scale)
             }
         }
     }
