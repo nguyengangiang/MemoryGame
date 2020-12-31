@@ -20,7 +20,10 @@ struct EmojiMemoryView: View {
                 }
                 .padding(5)
             }
-            Button("New Game") {viewModel.newGame()}
+            Button("New Game") {
+                withAnimation(.easeInOut) {
+                    viewModel.newGame()}
+            }
         }
         .padding()
         .foregroundColor(viewModel.color)
@@ -35,7 +38,7 @@ struct CardView: View {
                 ZStack() {
                     Pie(startAngle: Angle.degrees(-90), endAngle: Angle.degrees(60), clockwise: true)
                         .padding().opacity(0.4)
-                    Text(card.content)
+                    Text(card.content).rotationEffect(Angle.degrees(card.isMatched ? 360 : 0)).animation(card.isMatched ? Animation.linear(duration: 1).repeatForever(autoreverses: false) : .default)
                     }
                 .font(Font.system(size: fontSize(size: geometry.size)))
                 .cardify(isFaceUp: card.isFaceUp)
