@@ -77,6 +77,7 @@
 				C10EC874259AA27500059897 /* Array+Identifiable.swift */,
 				C10EC871259A9EEF00059897 /* GridLayout.swift */,
 				C1B967D225969415003A5A53 /* EmojiMemoryGame.swift */,
+				C16B2F4D259D14080066BA28 /* Pie.swift */,
 				C15EB7E82595BE890066D8E6 /* Assets.xcassets */,
 				C15EB7ED2595BE890066D8E6 /* Info.plist */,
 				C15EB7EA2595BE890066D8E6 /* Preview Content */,
@@ -88,7 +89,6 @@
 			isa = PBXGroup;
 			children = (
 				C15EB7EB2595BE890066D8E6 /* Preview Assets.xcassets */,
-				C16B2F4D259D14080066BA28 /* Pie.swift */,
 			);
 			path = "Preview Content";
 			sourceTree = "<group>";
