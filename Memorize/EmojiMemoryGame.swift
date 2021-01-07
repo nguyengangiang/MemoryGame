@@ -31,7 +31,7 @@ class EmojiMemoryGame: ObservableObject{
             color = Color.yellow
         case .notHuman:
             name = "Not Human"
-            emojis = ["🦸", "🦹", "🧑‍🎄", "🧙", "🧝", "🧝", "🧛", "🧟", "🧞"]
+            emojis = ["🦸", "🦹", "🧑‍🎄", "🧙", "🧝", "🧛", "🧟", "🧞"]
             color = Color.black
         case .animal:
             name = "Animal"
