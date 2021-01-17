@@ -8,10 +8,10 @@
 import Foundation
 import SwiftUI
 
-struct MemoryGame<CardContent> where CardContent: Equatable{
+struct MemoryGame<CardContent>: Codable where CardContent: Equatable, CardContent: Codable {
     private(set) var cards: [Card]
     private(set) var name: String
-    private(set) var color: Color
+    private(set) var color: UIColor.RGB
     private(set) var score: Int
 
     var indexOfTheOneAndOnlyFaceUpCard: Int? {
@@ -31,8 +31,6 @@ struct MemoryGame<CardContent> where CardContent: Equatable{
                 if (cards[potentialMatched].content == cards[chosenIndex].content) {
                     cards[chosenIndex].isMatched = true
                     cards[potentialMatched].isMatched = true
-                    print("Card chosen: \(cards[chosenIndex])")
-                    print("Card potential: \(cards[potentialMatched])")
                     score += 2
 
                 } else {
@@ -52,7 +50,11 @@ struct MemoryGame<CardContent> where CardContent: Equatable{
         }
     }
     
-    init (numberOfPairsOfCards: Int, themeName: String, color: Color, createContent: (Int) -> CardContent) {
+    var json: Data? {
+        try? JSONEncoder().encode(self)
+    }
+    
+    init (numberOfPairsOfCards: Int, themeName: String, color: UIColor.RGB, createContent: (Int) -> CardContent) {
         cards = Array<Card>()
         for pairIndex in 0 ..< numberOfPairsOfCards {
             cards.append(Card(content: createContent(pairIndex), id: pairIndex * 2))
@@ -64,7 +66,7 @@ struct MemoryGame<CardContent> where CardContent: Equatable{
         score = 0
     }
     
-    struct Card: Identifiable {
+    struct Card: Identifiable, Codable{
         var isFaceUp: Bool = false {
             didSet {
                 if isFaceUp {
@@ -82,7 +84,6 @@ struct MemoryGame<CardContent> where CardContent: Equatable{
         var content: CardContent
         var id: Int
         var isSeen: Bool = false
-        
         
         //MARK: Bonus Time
         
@@ -110,13 +111,11 @@ struct MemoryGame<CardContent> where CardContent: Equatable{
         
         // how much time left before the bonus opportunity runs out
         var bonusTimeRemaining: TimeInterval {
-            print("FUT: \(faceUpTime)")
             return max(0, bonusTimeLimit - faceUpTime)
         }
         
         // percentage of the bonus time remaining
         var bonusRemaining: Double {
-            print("BTR: \(bonusTimeRemaining)")
             return (bonusTimeLimit > 0 && bonusTimeRemaining > 0) ? bonusTimeRemaining / bonusTimeLimit : 0
         }
         

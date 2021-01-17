@@ -14,37 +14,39 @@ class EmojiMemoryGame: ObservableObject{
     static func createMemoryGame(theme: Theme) -> MemoryGame<String>{
         var emojis: [String]
         var name : String
-        var color: Color
+        var color: UIColor
 
         switch theme {
         case .halloween:
             name = "Halloween"
             emojis = ["👻", "💀", "😈", "🎃", "👹"]
-            color = Color.orange
+            color = UIColor.orange
         case .organs:
             name = "Organs"
             emojis = ["🫀", "🫁", "🧠"]
-            color = Color.red
+            color = UIColor.red
         case .chicken:
             name = "Chicken"
             emojis = ["🐓", "🐔", "🐤", "🐣", "🐥"]
-            color = Color.yellow
+            color = UIColor.yellow
         case .notHuman:
             name = "Not Human"
             emojis = ["🦸", "🦹", "🧑‍🎄", "🧙", "🧝", "🧛", "🧟", "🧞"]
-            color = Color.black
+            color = UIColor.black
         case .animal:
             name = "Animal"
             emojis = ["🦍", "🦧", "🐆", "🦒", "🐈‍⬛", "🦓"]
-            color = Color.green
+            color = UIColor.green
         case .flower:
             name = "Flower"
             emojis = ["🌸", "💐", "🌷", "🌹", "🌺", "🌼", "🌻"]
-            color = Color.pink
+            color = UIColor.magenta
         }
         
-        let numberOfPairsOfCards = Int.random(in: 2 ... emojis.count)
-        return MemoryGame(numberOfPairsOfCards: numberOfPairsOfCards, themeName: name, color: color, createContent: {index in
+
+        
+        let numberOfPairsOfCards = emojis.count
+        return MemoryGame(numberOfPairsOfCards: numberOfPairsOfCards, themeName: name, color: UIColor.RGB.init(red: color.rgb.red, green: color.rgb.green, blue: color.rgb.blue, alpha: color.rgb.alpha), createContent: {index in
             emojis[index]
         })
     }
@@ -62,6 +64,7 @@ class EmojiMemoryGame: ObservableObject{
     func newGame() {
         let randomTheme = Theme.allCases.randomElement()
         model = EmojiMemoryGame.createMemoryGame(theme: randomTheme!)
+        print("json: \(model.json?.utf8 ?? "nil")")
     }
     
     func choose(card: MemoryGame<String>.Card) {
@@ -78,7 +81,7 @@ class EmojiMemoryGame: ObservableObject{
     }
     
     var color: Color {
-        model.color
+        Color(model.color)
     }
     
     var numberOfPairsOfCards: Int {
