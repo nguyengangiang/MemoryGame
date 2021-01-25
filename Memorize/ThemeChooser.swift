@@ -10,6 +10,7 @@ import SwiftUI
 struct ThemeChooser: View {
     @State var editMode: EditMode = .inactive
     @State var themeStore: ThemeStore
+    @State private var showThemeEditor = false
     
     var body: some View {
         let themes = themeStore.themes
@@ -17,7 +18,19 @@ struct ThemeChooser: View {
             List {
                 ForEach(themes) { theme in
                     NavigationLink(destination:EmojiMemoryView(viewModel: EmojiMemoryGame(theme: theme)).navigationBarTitle(theme.themeName)) {
-                            Text(theme.themeName).foregroundColor(Color(theme.color))
+                        HStack {
+                            Image(systemName: "pencil.circle.fill")
+                                .imageScale(.large)
+                                .onTapGesture {
+                                    showThemeEditor = true
+                                }
+                                .sheet(isPresented: $showThemeEditor) {
+                                    ThemeEditor(isShowing: $showThemeEditor, themeName: theme.themeName)
+                                        .environmentObject(EmojiMemoryGame(theme: theme))
+                                }
+                            Text(theme.themeName)
+                        }
+                        .foregroundColor(Color(theme.color))
                     }
                 }
                 .onDelete { indexSet in
@@ -37,5 +50,16 @@ struct ThemeChooser: View {
             )
             .environment(\.editMode, $editMode)
         }
+    }
+}
+
+
+
+struct ThemeEditor: View {
+    @EnvironmentObject var emojiMemoryGame: EmojiMemoryGame
+    @Binding var isShowing: Bool
+    @State var themeName = ""
+    var body: some View {
+        Text("\(emojiMemoryGame.themeName)")
     }
 }
