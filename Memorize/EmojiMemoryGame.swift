@@ -7,68 +7,47 @@
 
 import Foundation
 import SwiftUI
+import Combine
 
-class EmojiMemoryGame: ObservableObject{
-    @Published private var model: MemoryGame<String> = createMemoryGame(theme: Theme.halloween)
-    
+class EmojiMemoryGame: ObservableObject {
+    @Published private var model: MemoryGame<String> = createMemoryGame(theme: Theme())
+
     static func createMemoryGame(theme: Theme) -> MemoryGame<String>{
-        var emojis: [String]
-        var name : String
-        var color: UIColor
-
-        switch theme {
-        case .halloween:
-            name = "Halloween"
-            emojis = ["👻", "💀", "😈", "🎃", "👹"]
-            color = UIColor.orange
-        case .organs:
-            name = "Organs"
-            emojis = ["🫀", "🫁", "🧠"]
-            color = UIColor.red
-        case .chicken:
-            name = "Chicken"
-            emojis = ["🐓", "🐔", "🐤", "🐣", "🐥"]
-            color = UIColor.yellow
-        case .notHuman:
-            name = "Not Human"
-            emojis = ["🦸", "🦹", "🧑‍🎄", "🧙", "🧝", "🧛", "🧟", "🧞"]
-            color = UIColor.black
-        case .animal:
-            name = "Animal"
-            emojis = ["🦍", "🦧", "🐆", "🦒", "🐈‍⬛", "🦓"]
-            color = UIColor.green
-        case .flower:
-            name = "Flower"
-            emojis = ["🌸", "💐", "🌷", "🌹", "🌺", "🌼", "🌻"]
-            color = UIColor.magenta
-        }
-        
-
-        
+        let emojis = theme.emojis
+        let name = theme.themeName
+        let color = theme.color
         let numberOfPairsOfCards = emojis.count
-        return MemoryGame(numberOfPairsOfCards: numberOfPairsOfCards, themeName: name, color: UIColor.RGB.init(red: color.rgb.red, green: color.rgb.green, blue: color.rgb.blue, alpha: color.rgb.alpha), createContent: {index in
+        
+        return MemoryGame(numberOfPairsOfCards: numberOfPairsOfCards, themeName: name, color: color, createContent: { index in
             emojis[index]
         })
     }
     
-    enum Theme: CaseIterable {
-        case halloween
-        case organs
-        case chicken
-        case notHuman
-        case animal
-        case flower
+    private var autosaveCancellable: AnyCancellable?
+    
+    init(name: String) {
+        let defaultsKey = "EmojiMemoryGame.\(name)"
+        autosaveCancellable = $model.sink { model in
+            UserDefaults.standard.setValue(model.json, forKey: defaultsKey)
+        }
+    }
+    
+    init(theme: Theme) {
+        model = EmojiMemoryGame.createMemoryGame(theme: theme)
     }
         
     //MARK: Intent(s)
-    func newGame() {
-        let randomTheme = Theme.allCases.randomElement()
-        model = EmojiMemoryGame.createMemoryGame(theme: randomTheme!)
-        print("json: \(model.json?.utf8 ?? "nil")")
-    }
+//    func newGame(theme: Theme) {
+//        model = EmojiMemoryGame.createMemoryGame(theme: theme)
+//        print("json: \(model.json?.utf8 ?? "nil")")
+//    }
     
     func choose(card: MemoryGame<String>.Card) {
         model.choose(card: card)
+    }
+    
+    func rename(name: String) {
+        self.model.name = name
     }
     
     //MARK: Access

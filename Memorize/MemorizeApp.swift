@@ -9,9 +9,17 @@ import SwiftUI
 
 @main
 struct MemorizeApp: App {
+    
     var body: some Scene {
-        WindowGroup {
-            EmojiMemoryView(viewModel: EmojiMemoryGame())
+        let themes = [Theme]()
+        let themeStore = ThemeStore(themes: themes)
+        //themeStore.addTheme(theme: EmojiMemoryGame.flower)
+        themeStore.addTheme(theme: EmojiMemoryGame.organs)
+        themeStore.addTheme(theme: EmojiMemoryGame.chicken)
+        themeStore.addTheme(theme: EmojiMemoryGame.notHuman)
+        print("id = {\(themeStore.themes.map{$0.id})}")
+        return WindowGroup {
+            ThemeChooser(themeStore: themeStore)
         }
     }
 }

@@ -19,10 +19,6 @@ struct EmojiMemoryView: View {
                 }
                 .padding(5)
             }
-            Button("New Game") {
-                withAnimation(.easeInOut) {
-                    viewModel.newGame()}
-            }
         }
         .padding()
         .foregroundColor(viewModel.color)
@@ -68,6 +64,6 @@ struct CardView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        EmojiMemoryView(viewModel: EmojiMemoryGame())
+        EmojiMemoryView(viewModel: EmojiMemoryGame(name: "Memory Game"))
     }
 }

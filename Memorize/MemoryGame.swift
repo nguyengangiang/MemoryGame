@@ -10,7 +10,7 @@ import SwiftUI
 
 struct MemoryGame<CardContent>: Codable where CardContent: Equatable, CardContent: Codable {
     private(set) var cards: [Card]
-    private(set) var name: String
+    var name: String
     private(set) var color: UIColor.RGB
     private(set) var score: Int
 
@@ -131,7 +131,6 @@ struct MemoryGame<CardContent>: Codable where CardContent: Equatable, CardConten
         
         // called when the card transitions to face up state
         private mutating func startUsingBonusTime() {
-            print("start using bonus time")
             if isConsumingBonusTime, lastFaceUpDate == nil {
                 lastFaceUpDate = Date()
             }
