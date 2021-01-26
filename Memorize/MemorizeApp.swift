@@ -19,7 +19,7 @@ struct MemorizeApp: App {
         themeStore.addTheme(theme: EmojiMemoryGame.notHuman)
         print("id = {\(themeStore.themes.map{$0.id})}")
         return WindowGroup {
-            ThemeChooser(themeStore: themeStore)
+            ThemeChooser().environmentObject(themeStore)
         }
     }
 }

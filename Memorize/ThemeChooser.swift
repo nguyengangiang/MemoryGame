@@ -8,28 +8,38 @@
 import SwiftUI
 
 struct ThemeChooser: View {
+    @EnvironmentObject var themeStore: ThemeStore
+    
     @State var editMode: EditMode = .inactive
-    @State var themeStore: ThemeStore
     @State private var showThemeEditor = false
     
     var body: some View {
         let themes = themeStore.themes
         return NavigationView {
-            List {
+            return List {
                 ForEach(themes) { theme in
-                    NavigationLink(destination:EmojiMemoryView(viewModel: EmojiMemoryGame(theme: theme)).navigationBarTitle(theme.themeName)) {
-                        HStack {
-                            Image(systemName: "pencil.circle.fill")
-                                .imageScale(.large)
-                                .onTapGesture {
-                                    showThemeEditor = true
-                                }
-                                .sheet(isPresented: $showThemeEditor) {
-                                    ThemeEditor(isShowing: $showThemeEditor, themeName: theme.themeName)
-                                        .environmentObject(EmojiMemoryGame(theme: theme))
-                                }
-                            Text(theme.themeName)
-                        }
+                    let emojiMemoryView = EmojiMemoryView(viewModel: EmojiMemoryGame(theme: theme), chosenTheme: theme)
+                    NavigationLink(destination: emojiMemoryView.navigationBarTitle(theme.themeName)) {
+                       // VStack {
+                            HStack {
+                                Image(systemName: "pencil.circle.fill")
+                                    .imageScale(.large)
+                                    .onTapGesture {
+                                        showThemeEditor = true
+                                    }
+                                    .sheet(isPresented: $showThemeEditor) {
+                                        ThemeEditor(isShowing: $showThemeEditor, chosenTheme: theme)
+                                            .environmentObject(themeStore)
+                                    }
+                                Text(theme.themeName)
+                            }
+//                            HStack {
+//                                ForEach(theme.emojis.map {String($0)}) { emoji in
+//                                    Text(emoji)
+//                                }
+//                            }
+//                        }
+
                         .foregroundColor(Color(theme.color))
                     }
                 }
@@ -56,10 +66,44 @@ struct ThemeChooser: View {
 
 
 struct ThemeEditor: View {
-    @EnvironmentObject var emojiMemoryGame: EmojiMemoryGame
+    @EnvironmentObject var themeStore: ThemeStore
     @Binding var isShowing: Bool
+    @State var chosenTheme: Theme
     @State var themeName = ""
+    @State var emojisToAdd = ""
+    
     var body: some View {
-        Text("\(emojiMemoryGame.themeName)")
+        VStack {
+            ZStack {
+                Text("\(chosenTheme.themeName)").font(.headline).padding()
+                HStack {
+                    Spacer()
+                    Button { isShowing = false }
+                        label: { Text("Done").padding() }
+                }
+
+            }
+            Divider()
+            Form() {
+                Section() {
+                    TextField("Theme Name", text: $themeName, onEditingChanged: { began in
+                        if !began {
+                            themeStore.setName(themeName, for: chosenTheme)
+                        }
+                    })
+                    Text("Add Emoji")
+                    HStack {
+                        TextField("Emoji", text: $emojisToAdd)
+                        Button {
+                            themeStore.addEmoji(emojisToAdd, to: chosenTheme)
+                            emojisToAdd = ""
+                        } label: { Text("Done") }
+
+                    }
+
+                }
+            }
+            
+        }
     }
 }

@@ -41,7 +41,15 @@ struct Theme: Codable, Identifiable {
         self.id = UUID()
     }
     
-
+    mutating func addEmoji(_ emoji: String) {
+        for e in emoji {
+            emojis.append(String(e))
+        }
+    }
+    
+    mutating func rename(to name: String) {
+        themeName = name
+    }
 }
 
 extension EmojiMemoryGame {

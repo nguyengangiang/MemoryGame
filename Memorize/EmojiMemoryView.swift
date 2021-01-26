@@ -9,6 +9,7 @@ import SwiftUI
 
 struct EmojiMemoryView: View {
     @ObservedObject var viewModel: EmojiMemoryGame
+    @State var chosenTheme: Theme
     
     var body: some View {
         Group() {
@@ -22,6 +23,8 @@ struct EmojiMemoryView: View {
         }
         .padding()
         .foregroundColor(viewModel.color)
+        Button {viewModel.newGame(theme: chosenTheme)}
+            label: { Text("New Game") }
     }
 }
 
@@ -64,6 +67,6 @@ struct CardView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        EmojiMemoryView(viewModel: EmojiMemoryGame(name: "Memory Game"))
+        EmojiMemoryView(viewModel: EmojiMemoryGame(name: "Memory Game"), chosenTheme: Theme())
     }
 }

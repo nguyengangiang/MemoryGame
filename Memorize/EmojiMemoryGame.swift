@@ -37,10 +37,9 @@ class EmojiMemoryGame: ObservableObject {
     }
         
     //MARK: Intent(s)
-//    func newGame(theme: Theme) {
-//        model = EmojiMemoryGame.createMemoryGame(theme: theme)
-//        print("json: \(model.json?.utf8 ?? "nil")")
-//    }
+    func newGame(theme: Theme) {
+        model = EmojiMemoryGame.createMemoryGame(theme: theme)
+    }
     
     func choose(card: MemoryGame<String>.Card) {
         model.choose(card: card)
