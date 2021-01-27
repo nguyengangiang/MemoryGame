@@ -53,6 +53,7 @@ struct Theme: Codable, Identifiable {
             emojiSet.insert(String(e))
         }
         self.emojis = Array(emojiSet)
+        self.numberOfPairsOfCards = emojis.count
     }
     
     mutating func rename(to name: String) {
@@ -66,6 +67,7 @@ struct Theme: Codable, Identifiable {
         }
         emojiSet.remove(emoji)
         self.emojis = Array(emojiSet)
+        self.numberOfPairsOfCards = emojis.count
     }
     
     mutating func incrementCardCount() {
@@ -78,6 +80,18 @@ struct Theme: Codable, Identifiable {
         if (numberOfPairsOfCards > 2) {
             numberOfPairsOfCards -= 1
         }
+    }
+    
+    mutating func setNumberOfPairsOfCard(to i: Int) {
+        if (i <= emojis.count && i >= 2) {
+            self.numberOfPairsOfCards = i
+        } else {
+            self.numberOfPairsOfCards = emojis.count
+        }
+    }
+    
+    mutating func setColor(_ color: Color) {
+        self.color = UIColor(color).rgb
     }
 }
 

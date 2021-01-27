@@ -15,7 +15,7 @@ struct EmojiMemoryView: View {
         Group() {
             Text(viewModel.themeName)
             Text(String(viewModel.score))
-            Grid (items: viewModel.cards) { card in
+            Grid (viewModel.cards) { card in
                 CardView(card: card).onTapGesture { withAnimation(.linear(duration: 0.5)) {viewModel.choose(card: card)}
                 }
                 .padding(5)

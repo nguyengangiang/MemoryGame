@@ -12,6 +12,7 @@ struct ThemeChooser: View {
     @State var editMode: EditMode = .inactive
     @State private var showThemeEditor = false
     @State var chosenTheme = Theme()
+    @Environment(\.presentationMode) var presentation
     
     var body: some View {
         let themes = themeStore.themes
@@ -27,6 +28,7 @@ struct ThemeChooser: View {
                                     if editMode.isEditing {
                                         showThemeEditor = true
                                         self.chosenTheme = theme
+                                        
                                     }
                                 }
                                 .scaleEffect(editMode.isEditing ? 1 : 0)
@@ -39,7 +41,7 @@ struct ThemeChooser: View {
                         .foregroundColor(Color(theme.color))
                     }
 
-                    .sheet(isPresented: $showThemeEditor) {
+                    .popover(isPresented: $showThemeEditor) {
                         ThemeEditor(isShowing: $showThemeEditor, chosenTheme: $chosenTheme)
                             .environmentObject(themeStore)
                     }
@@ -96,34 +98,49 @@ struct ThemeEditor: View {
                         Button {
                             themeStore.addEmoji(emojisToAdd, to: chosenTheme)
                             emojisToAdd = ""
-                        } label: { Text("Done") }
+                        } label: { Text("Add") }
 
                     }
                 })
                 Section(header: Text("Emojis"), footer: Text("Tap to remove")) {
-                    HStack {
-                        ForEach(themeStore.themes[themeStore.themes.firstIndex(matching: chosenTheme)!].emojis, id: \.self) { emoji in
-                            Text(emoji)
-                                .onTapGesture {
-                                    themeStore.removeEmoji(emoji, from: chosenTheme)
-                                }
-                        }
+                    Grid(themeStore.themes[themeStore.themes.firstIndex(matching: chosenTheme)!].emojis, id: \.self) { emoji in
+                        Text(emoji).font(Font.system(size: fontSize))
+                            .onTapGesture {
+                                themeStore.removeEmoji(emoji, from: chosenTheme)
+                            }
                     }
+                    .frame(height: height)
                 }
                 Section(header: Text("Card Count")) {
                     Stepper {
-                        themeStore.themes[themeStore.themes.firstIndex(matching: chosenTheme)!].incrementCardCount()
+                        themeStore.incrementCardPair(for: chosenTheme)
                     } onDecrement: {
-                        themeStore.themes[themeStore.themes.firstIndex(matching: chosenTheme)!].decrementCardCount()
+                        themeStore.decrementCardPair(for: chosenTheme)
                     } label: {
                         Text("\(themeStore.themes[themeStore.themes.firstIndex(matching: chosenTheme)!].numberOfPairsOfCards) Pairs")
                     }
-
-
+                }
+                
+                Section(header: Text("Color")) {
+                    Grid(colors, id: \.self) { color in
+                        RoundedRectangle(cornerRadius: 5).foregroundColor(color)
+                            .onTapGesture {
+                                themeStore.themes[themeStore.themes.firstIndex(matching: chosenTheme)!].setColor(color)
+                            }
+                            .padding(5)
+                    }
+                    .frame(height: height)
                 }
             }
         }
     }
+    
+    // MARK: Drawing constants
+    var fontSize: CGFloat = 40
+    var height: CGFloat {
+        CGFloat((chosenTheme.emojis.count - 1) / 6) * 70 + 70
+    }
+    var colors = [Color.blue, Color.gray, Color.green, Color.orange, Color.pink, Color.purple, Color.red, Color.yellow]
 }
 
 struct ThemeChooser_Preview:  PreviewProvider {
