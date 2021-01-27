@@ -9,38 +9,39 @@ import SwiftUI
 
 struct ThemeChooser: View {
     @EnvironmentObject var themeStore: ThemeStore
-    
     @State var editMode: EditMode = .inactive
     @State private var showThemeEditor = false
+    @State var chosenTheme = Theme()
     
     var body: some View {
         let themes = themeStore.themes
         return NavigationView {
-            return List {
+            List {
                 ForEach(themes) { theme in
                     let emojiMemoryView = EmojiMemoryView(viewModel: EmojiMemoryGame(theme: theme), chosenTheme: theme)
                     NavigationLink(destination: emojiMemoryView.navigationBarTitle(theme.themeName)) {
-                       // VStack {
-                            HStack {
-                                Image(systemName: "pencil.circle.fill")
-                                    .imageScale(.large)
-                                    .onTapGesture {
+                        HStack {
+                            Image(systemName: "pencil.circle.fill")
+                                .imageScale(.large)
+                                .onTapGesture {
+                                    if editMode.isEditing {
                                         showThemeEditor = true
+                                        self.chosenTheme = theme
                                     }
-                                    .sheet(isPresented: $showThemeEditor) {
-                                        ThemeEditor(isShowing: $showThemeEditor, chosenTheme: theme)
-                                            .environmentObject(themeStore)
-                                    }
+                                }
+                                .scaleEffect(editMode.isEditing ? 1 : 0)
+                            VStack {
                                 Text(theme.themeName)
+                                Text("\(theme.numberOfPairsOfCards) pairs of \(theme.emojis.joined())")
                             }
-//                            HStack {
-//                                ForEach(theme.emojis.map {String($0)}) { emoji in
-//                                    Text(emoji)
-//                                }
-//                            }
-//                        }
-
+                            .multilineTextAlignment(.leading)
+                        }
                         .foregroundColor(Color(theme.color))
+                    }
+
+                    .sheet(isPresented: $showThemeEditor) {
+                        ThemeEditor(isShowing: $showThemeEditor, chosenTheme: $chosenTheme)
+                            .environmentObject(themeStore)
                     }
                 }
                 .onDelete { indexSet in
@@ -68,7 +69,7 @@ struct ThemeChooser: View {
 struct ThemeEditor: View {
     @EnvironmentObject var themeStore: ThemeStore
     @Binding var isShowing: Bool
-    @State var chosenTheme: Theme
+    @Binding var chosenTheme: Theme
     @State var themeName = ""
     @State var emojisToAdd = ""
     
@@ -81,17 +82,15 @@ struct ThemeEditor: View {
                     Button { isShowing = false }
                         label: { Text("Done").padding() }
                 }
-
             }
             Divider()
             Form() {
-                Section() {
-                    TextField("Theme Name", text: $themeName, onEditingChanged: { began in
-                        if !began {
-                            themeStore.setName(themeName, for: chosenTheme)
-                        }
-                    })
-                    Text("Add Emoji")
+                TextField("Theme Name", text: $themeName, onEditingChanged: { began in
+                    if !began {
+                        themeStore.setName(themeName, for: chosenTheme)
+                    }
+                })
+                Section(header: Text("Add Emoji"), content: {
                     HStack {
                         TextField("Emoji", text: $emojisToAdd)
                         Button {
@@ -100,10 +99,39 @@ struct ThemeEditor: View {
                         } label: { Text("Done") }
 
                     }
+                })
+                Section(header: Text("Emojis"), footer: Text("Tap to remove")) {
+                    HStack {
+                        ForEach(themeStore.themes[themeStore.themes.firstIndex(matching: chosenTheme)!].emojis, id: \.self) { emoji in
+                            Text(emoji)
+                                .onTapGesture {
+                                    themeStore.removeEmoji(emoji, from: chosenTheme)
+                                }
+                        }
+                    }
+                }
+                Section(header: Text("Card Count")) {
+                    Stepper {
+                        themeStore.themes[themeStore.themes.firstIndex(matching: chosenTheme)!].incrementCardCount()
+                    } onDecrement: {
+                        themeStore.themes[themeStore.themes.firstIndex(matching: chosenTheme)!].decrementCardCount()
+                    } label: {
+                        Text("\(themeStore.themes[themeStore.themes.firstIndex(matching: chosenTheme)!].numberOfPairsOfCards) Pairs")
+                    }
+
 
                 }
             }
-            
         }
     }
 }
+
+struct ThemeChooser_Preview:  PreviewProvider {
+    static var previews: some View {
+        var themes = [Theme]()
+        themes.append(Theme.halloween)
+        return ThemeChooser()
+            .environmentObject(ThemeStore(themes: themes))
+    }
+}
+

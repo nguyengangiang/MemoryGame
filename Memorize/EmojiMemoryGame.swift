@@ -16,7 +16,7 @@ class EmojiMemoryGame: ObservableObject {
         let emojis = theme.emojis
         let name = theme.themeName
         let color = theme.color
-        let numberOfPairsOfCards = emojis.count
+        let numberOfPairsOfCards = (theme.numberOfPairsOfCards < emojis.count && theme.numberOfPairsOfCards > 1 ? theme.numberOfPairsOfCards : emojis.count)
         
         return MemoryGame(numberOfPairsOfCards: numberOfPairsOfCards, themeName: name, color: color, createContent: { index in
             emojis[index]

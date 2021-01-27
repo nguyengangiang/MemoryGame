@@ -15,31 +15,10 @@ class ThemeStore: ObservableObject {
     
     init(named name: String = "Memory Game", themes: [Theme]) {
         self.name = name
-        self.themes = themes
-        let defaultsKey = "MemoryGameStore.\(name)"
+        let defaultsKey = "MemoryStore.\(name)"
+        self.themes = Array(fromPropertyList: UserDefaults.standard.object(forKey: defaultsKey))
         autosave = $themes.sink { themes in
-            let json = self.json(themeList: themes)
-            UserDefaults.standard.setValue(json, forKey: defaultsKey)
-        }
-    }
-    
-    func json<T: Encodable>(themeList: T) -> Data {
-        var json: Data
-        do {
-            let encoder = JSONEncoder()
-            json = try encoder.encode(themeList)
-        } catch {
-            fatalError("Couldn't encode  themeList")
-        }
-        return json
-    }
-    
-    init?(json: Data?) {
-        if json != nil, let newThemes = try? JSONDecoder().decode([Theme].self, from: json!) {
-            self.themes = newThemes
-            self.name = "Untitled"
-        } else {
-            return nil
+            UserDefaults.standard.set(themes.asPropertyList, forKey: defaultsKey)
         }
     }
     
@@ -67,4 +46,34 @@ class ThemeStore: ObservableObject {
         themes.remove(at: themes.firstIndex(matching: theme)!)
     }
     
+    func removeEmoji(_ emoji: String, from theme: Theme) {
+        themes[themes.firstIndex(matching: theme)!].removeEmoji(emoji)
+    }
+    
+    func incrementCardPair(for theme: Theme) {
+        themes[themes.firstIndex(matching: theme)!].incrementCardCount()
+    }
+    
+    func decrementCardPair(for theme: Theme) {
+        themes[themes.firstIndex(matching: theme)!].decrementCardCount()
+    }
+    
+}
+
+extension Array where Element == Theme {
+    var asPropertyList: [Data?] {
+        var dataArray = [Data?]()
+        for (element) in self {
+            dataArray.append(element.json)
+        }
+        return dataArray
+    }
+    
+    init(fromPropertyList plist: Any?) {
+        self.init()
+        let dataArray = plist as? [Data?] ?? []
+        for data in dataArray {
+            self.append(Theme(json: data)!)
+        }
+    }
 }

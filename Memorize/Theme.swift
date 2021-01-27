@@ -13,6 +13,7 @@ struct Theme: Codable, Identifiable {
     var themeName: String
     var emojis: [String]
     var color: UIColor.RGB
+    var numberOfPairsOfCards: Int
     var id: UUID
     
     var json: Data? {
@@ -31,6 +32,7 @@ struct Theme: Codable, Identifiable {
         self.themeName = "Face"
         self.emojis = ["😳", "🙄", "😏", "🥺"]
         self.color = UIColor(Color.gray).rgb
+        self.numberOfPairsOfCards = emojis.count
         self.id = UUID()
     }
     
@@ -39,20 +41,47 @@ struct Theme: Codable, Identifiable {
         self.emojis = emojis
         self.color = UIColor(color).rgb
         self.id = UUID()
+        self.numberOfPairsOfCards = emojis.count
     }
     
     mutating func addEmoji(_ emoji: String) {
-        for e in emoji {
-            emojis.append(String(e))
+        var emojiSet = Set<String>()
+        for e in emojis {
+            emojiSet.insert(e)
         }
+        for e in emoji {
+            emojiSet.insert(String(e))
+        }
+        self.emojis = Array(emojiSet)
     }
     
     mutating func rename(to name: String) {
         themeName = name
     }
+    
+    mutating func removeEmoji(_ emoji: String){
+        var emojiSet = Set<String>()
+        for e in emojis {
+            emojiSet.insert(e)
+        }
+        emojiSet.remove(emoji)
+        self.emojis = Array(emojiSet)
+    }
+    
+    mutating func incrementCardCount() {
+        if (numberOfPairsOfCards < emojis.count) {
+            numberOfPairsOfCards += 1
+        }
+    }
+    
+    mutating func decrementCardCount() {
+        if (numberOfPairsOfCards > 2) {
+            numberOfPairsOfCards -= 1
+        }
+    }
 }
 
-extension EmojiMemoryGame {
+extension Theme {
     static var halloween: Theme {
         Theme(name: "Halloween", emojis: ["👻", "💀", "😈", "🎃", "👹"], color: Color.orange )
     }
